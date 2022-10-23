@@ -49,17 +49,7 @@ int main() {
 
 		} while (board[pos - 1] == 0 || (board[pos - 1] == 1) || pos > 9 || pos <= 0);
 
-
-
-
-		if (board[pos-1] == -1) {
-
-			board[pos-1] = player % 2;
-		}
-		else if ((board[pos-1] == 0) || (board[pos-1] == 1) || pos > 9) {
-
-			cout << "Please enter valid move." << endl;
-		}
+		board[pos - 1] = player % 2;
 		
 		printboard(board);
 
