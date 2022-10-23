@@ -9,9 +9,9 @@ void printboard(int board[]);
 
 int main() {
 
-	int board[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };	// -1 by default
-	int pos;												// Position
-	int player;												// Who plays first?
+	int board[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };		// -1 by default
+	int pos;							// Position
+	int player;							// Who plays first?
 
 	srand((unsigned)time(NULL)); // imports random
 
