@@ -1,0 +1,244 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+char convert(int num, int i);
+short isend(int board[]);
+void printboard(int board[]);
+void getinput(int board[], int &pos, int player);
+void aiplays(int board[]);
+
+/*
+ONE PLAYER
+TWO PLAYER
+*/
+
+int main() {
+
+	int board[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };	// -1 by default
+	int pos = 0;												// Position
+	int player;												// Who plays first?
+	bool playmode;
+
+	srand((unsigned)time(NULL)); // imports random
+
+	cout << "Game Positions: " << endl;
+	cout << "|||||||||" << endl;
+	cout << "| 1 2 3 |" << endl;
+	cout << "| 4 5 6 |" << endl;
+	cout << "| 7 8 9 |" << endl;
+	cout << "|||||||||" << endl;
+
+	cout << "One player: 0\nTwo Player: 1\nPlaymode: ";
+	cin >> playmode;
+
+	if (playmode == 1) {
+
+
+		player = rand() % 2; // Gets random number to determine first player
+
+		if (player == 0) {
+
+			cout << "First move is O!" << endl;
+		}
+		else if (player == 1) {
+
+			cout << "First move is X!" << endl;
+		}
+
+
+
+		while (isend(board) == 0) {
+
+			getinput(board, pos, player);
+
+			printboard(board);
+
+			player++;
+		}
+
+	}
+	else if (playmode == 0) {
+
+		player = 1;
+
+		while (isend(board) == 0) {
+
+			if (player % 2 == 1) { // Player X
+
+				getinput(board, pos, player);
+			}
+			else if (player % 2 == 0) { // Player O ai plays
+
+				aiplays(board);
+			}			
+
+			printboard(board);
+
+			player++;
+		}
+
+		return 3;
+	}
+}
+
+void aiplays(int board[]) {
+
+	srand((unsigned)time(NULL));
+
+	int flag = 0;
+
+	cout << "\nAI plays!" << endl;
+		
+	if (board[4] == -1) {
+
+		board[4] = 0;
+		flag = 1;
+	}
+
+	while (flag != 1) {
+
+		int random = (rand() % 8) + 1;
+
+		if (board[random] == -1) {
+
+			board[random] = 0;
+			flag = 1;
+		}
+	}
+}
+
+void getinput(int board[], int &pos, int player) {
+
+	do { // Getting valid input
+
+		cout << "Enter your move (" << convert(player % 2, 0) << "): ";
+		cin >> pos;
+
+		if ((board[pos - 1] == 0) || (board[pos - 1] == 1) || pos > 9 || pos <= 0) {
+
+			cout << "Please enter valid move." << endl;
+		}
+
+	} while (board[pos - 1] == 0 || (board[pos - 1] == 1) || pos > 9 || pos <= 0);
+
+	board[pos - 1] = player % 2; // Writing input to board array
+
+}
+
+void printboard(int board[]) {
+
+	cout << "|||||||||" << endl;
+	cout << "| ";
+
+	for (int i = 0; i < 3; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+
+	cout << "| ";
+	for (int i = 3; i < 6; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+
+	cout << "| ";
+	for (int i = 6; i < 9; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+	cout << "|||||||||" << endl;
+
+}
+
+char convert(int num, int i) {
+
+	/*int N = i + 49; // Converting from ascii
+	char c = N;*/
+
+	switch (num) {
+	case 0:
+		return 'O';
+
+	case 1:
+		return 'X';
+
+	case -1:
+		return ' '; // return c for nums
+	}
+
+
+	return '%';
+}
+
+short isend(int board[]) {
+	
+	/*
+	0: continue, 
+	1: X wins, 
+	2: O wins.
+	*/
+
+	for (int i = 0; i < 3; i++) {
+
+		if (board[i] == 1 && board[i + 3] == 1 && board[i + 6] == 1) { // Check vertical
+
+			cout << "X player wins!" << endl;
+			return 1;
+		}
+		else if (board[i] == 0 && board[i + 3] == 0 && board[i + 6] == 0) {
+
+			cout << "O player wins!" << endl;
+			return 2;
+		}
+	}
+
+	for (int i = 0; i < 8; i = i + 3) {
+
+		if (board[i] == 1 && board[i + 1] == 1 && board[i + 2] == 1) { // Check horizontal
+
+			cout << "X player wins!" << endl;
+			return 1;
+		}
+		else if (board[i] == 0 && board[i + 1] == 0 && board[i + 2] == 0) {
+
+			cout << "O player wins!" << endl;
+			return 2;
+		}
+	}
+
+	if ( (board[0] == 1 && board[4] == 1 && board[8] == 1) || ((board[2] == 1 && board[4] == 1 && board[6] == 1)) ){ // Check crossway
+
+		cout << "X player wins!" << endl;
+		return 1;
+	}
+	else if ( (board[0] == 0 && board[4] == 0 && board[8] == 0) || ((board[2] == 0 && board[4] == 0 && board[6] == 0)) ) {
+
+		cout << "O player wins!" << endl;
+		return 2;
+	}
+
+	// Check tie
+	int flag = 0;
+
+	for (int i = 0; i < 9; i++) {
+
+		if (board[i] == -1) {
+
+			flag = 1;
+		}
+	}
+
+	if (flag == 0) {
+
+		cout << "Game is Tie!" << endl;
+		return -1;
+	}
+
+
+	return 0;
+}
