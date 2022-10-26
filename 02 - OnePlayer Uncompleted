@@ -91,13 +91,14 @@ void aiplays(int board[]) {
 
 	cout << "\nAI plays!" << endl;
 		
-	if (board[4] == -1) {
+	if (board[4] == -1) { // if center board position empty play there 
 
 		board[4] = 0;
 		flag = 1;
 	}
 
-	while (flag != 1) {
+	while (flag != 1) { // else play randomly to empty position. 
+
 
 		int random = (rand() % 8) + 1;
 
