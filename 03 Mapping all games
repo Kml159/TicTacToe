@@ -1,0 +1,354 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+char convert(int num, int i);
+short isend(int board[]);
+void printboard(int board[]);
+void getinput(int board[], int &pos, int player);
+int aiplays(int board[], int player);
+int map();
+
+/*
+ONE PLAYER
+TWO PLAYER
+*/
+
+int main() {
+
+	int board[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };	// -1 by default
+	int pos = 0;												// Position
+	int player;												// Who plays first?
+	bool playmode;
+
+	srand((unsigned)time(NULL)); // imports random
+
+	cout << "Mapping..." << endl;
+	map();
+
+	cout << "Game Positions: " << endl;
+	cout << "|||||||||" << endl;
+	cout << "| 1 2 3 |" << endl;
+	cout << "| 4 5 6 |" << endl;
+	cout << "| 7 8 9 |" << endl;
+	cout << "|||||||||" << endl;
+
+	cout << "One player: 0\nTwo Player: 1\nPlaymode: ";
+	cin >> playmode;
+
+	if (playmode == 1) {
+
+
+		player = rand() % 2; // Gets random number to determine first player
+
+		if (player == 0) {
+
+			cout << "First move is O!" << endl;
+		}
+		else if (player == 1) {
+
+			cout << "First move is X!" << endl;
+		}
+
+
+
+		while (isend(board) == 0) {
+
+			getinput(board, pos, player);
+
+			printboard(board);
+
+			player++;
+		}
+
+	}
+	else if (playmode == 0) {
+
+		player = 1;
+
+		while (isend(board) == 0) {
+
+			if (player % 2 == 1) { // Player X
+
+				getinput(board, pos, player);
+			}
+			else if (player % 2 == 0) { // Player O ai plays
+
+				aiplays(board, player);
+			}			
+
+			printboard(board);
+
+			player++;
+		}
+
+		return 3;
+	}
+}
+
+int aiplays(int board[], int player) {
+
+	srand((unsigned)time(NULL));
+
+	int flag = 0;
+	int random;
+
+	cout << "\nAI plays!" << endl;
+		
+	/*if (board[4] == -1) { // Commented out to get fully random moves.
+
+		board[4] = 0;
+		flag = 1;
+	}*/
+
+	while (flag != 1) {
+
+		random = (rand() % 9);
+
+		if (board[random] == -1) {
+
+			board[random] = player % 2;
+			flag = 1;
+		}
+	}
+
+	return random; // position that ai played is returned.
+}
+
+int map() { // Calculate and map all possible games.
+
+	srand((unsigned)time(NULL));
+
+	//int simboard[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+	int player = rand() % 2;	// X for 1, 0 for O
+	int game = 0; // +1
+	int move;
+
+	int scoremap[100];
+	int movehistory[9][100];
+	/* 
+	First num is 0: O, 1: X; second num is position.
+	Games that has same history should not be recorded to map twice.
+	*/
+
+	
+
+	int movecount = 0;
+
+	while(game < 100) { // ALL POSSIBLE GAMES
+
+		int player = rand() % 2;	// X for 1, 0 for O
+
+		int simboard[9] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 }; // Board gets reset for every game.
+
+		movecount = 0;
+
+		while (isend(simboard) == 0) { // ONE GAME IS PLAYED			
+
+			if (player % 2 == 1) { // Player X
+
+				move = aiplays(simboard, player);
+
+				movehistory[movecount][game] = (player % 2) * 10 + move;
+				/* AI ramdomly plays a move ad then it gets recorded to array. Example: 18, 1 => means X, 8 means position. */
+				
+			}
+			else if (player % 2 == 0) {
+
+				move = aiplays(simboard, player);
+
+				movehistory[movecount][game] = (player % 2) * 10 + move;
+				/* AI ramdomly plays a move ad then it gets recorded to array. Example: 08, 0 => means O, 8 means position. */
+			}
+
+			cout << "AI " << convert(player % 2, 0) << " played. " << "		Move: " << move << "	Gamecount: " << game << endl;
+			printboard(simboard);
+
+			movecount++;
+			player++;
+		}
+
+		int sameflag = 0;
+		int similarity = 0;
+
+		/*for (int i = 0; i < 100; i++) { // If the games are identical program will not write into map. GOES VERTICAL IN 2D ARRAY
+
+			for (int j = 0; j < 9; j++) { 
+
+				if (movehistory[j][game] == movehistory[j][i] && game != i) { // GOES HORIZONTAL IN 2D ARRAY
+
+					similarity++;
+				}
+				if (similarity == 9) {
+
+					sameflag = 1;
+				}
+			}
+		}*/
+
+		/*
+		Win = 3 point
+		Tie = 1 point
+		Lose = 0 point
+		*/
+
+		if (sameflag == 0) { // If games not identical write into map.
+
+			if (isend(simboard) == 1) { // if X wins
+
+				scoremap[game] = 3;
+			}
+			else if (isend(simboard) == 0) { // if X lose
+
+				scoremap[game] = 0;
+			}
+			else if (isend(simboard) == -1) { // if game is tie
+
+				scoremap[game] = 1;
+			}
+
+			game++;
+
+			printboard(simboard);
+		}
+		
+	}
+	
+
+	return 0;
+}
+
+void getinput(int board[], int &pos, int player) {
+
+	do { // Getting valid input
+
+		cout << "Enter your move (" << convert(player % 2, 0) << "): ";
+		cin >> pos;
+
+		if ((board[pos - 1] == 0) || (board[pos - 1] == 1) || pos > 9 || pos <= 0) {
+
+			cout << "Please enter valid move." << endl;
+		}
+
+	} while (board[pos - 1] == 0 || (board[pos - 1] == 1) || pos > 9 || pos <= 0);
+
+	board[pos - 1] = player % 2; // Writing input to board array
+
+}
+
+void printboard(int board[]) {
+
+	cout << "|||||||||" << endl;
+	cout << "| ";
+
+	for (int i = 0; i < 3; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+
+	cout << "| ";
+	for (int i = 3; i < 6; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+
+	cout << "| ";
+	for (int i = 6; i < 9; i++) {
+
+		cout << convert(board[i], i) << " ";
+	}
+	cout << "|" << endl;
+	cout << "|||||||||" << endl;
+
+}
+
+char convert(int num, int i) {
+
+	/*int N = i + 49; // Converting from ascii
+	char c = N;*/
+
+	switch (num) {
+	case 0:
+		return 'O';
+
+	case 1:
+		return 'X';
+
+	case -1:
+		return ' '; // return c for nums
+	}
+
+
+	return '%';
+}
+
+short isend(int board[]) {
+	
+	/*
+	0: continue, 
+	1: X wins, 
+	2: O wins.
+	*/
+
+	for (int i = 0; i < 3; i++) {
+
+		if (board[i] == 1 && board[i + 3] == 1 && board[i + 6] == 1) { // Check vertical
+
+			cout << "X player wins!" << endl;
+			return 1;
+		}
+		else if (board[i] == 0 && board[i + 3] == 0 && board[i + 6] == 0) {
+
+			cout << "O player wins!" << endl;
+			return 2;
+		}
+	}
+
+	for (int i = 0; i < 8; i = i + 3) {
+
+		if (board[i] == 1 && board[i + 1] == 1 && board[i + 2] == 1) { // Check horizontal
+
+			cout << "X player wins!" << endl;
+			return 1;
+		}
+		else if (board[i] == 0 && board[i + 1] == 0 && board[i + 2] == 0) {
+
+			cout << "O player wins!" << endl;
+			return 2;
+		}
+	}
+
+	if ( (board[0] == 1 && board[4] == 1 && board[8] == 1) || ((board[2] == 1 && board[4] == 1 && board[6] == 1)) ){ // Check crossway
+
+		cout << "X player wins!" << endl;
+		return 1;
+	}
+	else if ( (board[0] == 0 && board[4] == 0 && board[8] == 0) || ((board[2] == 0 && board[4] == 0 && board[6] == 0)) ) {
+
+		cout << "O player wins!" << endl;
+		return 2;
+	}
+
+	// Check tie
+	int flag = 0;
+
+	for (int i = 0; i < 9; i++) {
+
+		if (board[i] == -1) {
+
+			flag = 1;
+		}
+	}
+
+	if (flag == 0) {
+
+		cout << "Game is Tie!" << endl;
+		return -1;
+	}
+
+
+	return 0;
+}
