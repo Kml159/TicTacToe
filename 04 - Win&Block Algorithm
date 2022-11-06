@@ -89,12 +89,6 @@ int prandom(int board[], int player) {
 
 	cout << "\nRandom play." << endl;
 
-	/*if (board[4] == -1) { // Commented out to get fully random moves.
-
-		board[4] = 0;
-		flag = 1;
-	}*/
-
 	while (flag != 1) {
 
 		random = (rand() % 9);
