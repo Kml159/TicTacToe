@@ -32,7 +32,6 @@ int main() {
 
 	if (playmode == 1) {
 
-
 		player = rand() % 2; // Gets random number to determine first player
 
 		if (player == 0) {
@@ -58,7 +57,9 @@ int main() {
 	}
 	else if (playmode == 0) {
 
-		player = 1;
+		player = rand() % 2; // Gets random number to determine first player
+
+		cout << endl << "First player is " << convert(player, 0) << "!" << endl;
 
 		while (isend(board) == 0) {
 
