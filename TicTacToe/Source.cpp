@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "func.h"
+#include "minimax.h"
 
 using namespace std;
 
@@ -70,6 +70,11 @@ int main() {
 			player++;
 		}
 
-		return 3;
 	}
+
+	cout << endl << "Enter anything to end the program." << endl;
+
+	int x;
+
+	cin >> x;
 }
