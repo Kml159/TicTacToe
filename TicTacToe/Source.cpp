@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "minimax.h"
+#include "func.h"
 
 using namespace std;
 
